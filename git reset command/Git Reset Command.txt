@@ -1,0 +1,239 @@
+ Git Reset Command
+=================
+-> 1. To Remove Changes from Staging Area Level
+-> 2. To Undo Commits at Repository Level
+
+Syntax:
+=======
+git reset <mode> <commit id>
+
+--> Moves the HEAD to the specified commit, and all remaining recent commits will be removed.
+
+--> Mode will decide whether these are going to 
+    remove from staging area and working directory or not.
+--> mode will be
+    --mixed (default)
+    --soft
+    --hard
+
+1) Reset with --mixed option:
+=============================
+
+ $git reset --mixed <commit-id>
+
+-> It is the default mode.
+-> To discard commits in the local repository and to discard changes in 
+   staging area we should use reset with --mixed option.
+-> It will not touch the working directory.
+
+2) Reset with --soft Option:
+============================
+
+-> It is same as --mixed mode option, but changes are available in working directory 
+   as well as in staging area. 
+-> It won't touch staging area and working directory.
+-> As Changes already present in staging area, just we have to use commit to revert back.
+
+
+3) Reset with --hard Option:
+============================
+
+-> The changes will be removed from every where.
+   i.e Loal Repo, Staging Area and Working Directory.
+-> It is impossible to revert back and hence while using hard reset command.
+-> We have special take care while using reset --hard option. 
+
+
+Practice:
+=========
+-> 1. To Remove Changes from Staging Area Level
+-----------------------------------------------
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ ls
+file1.txt
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ cat file1.txt
+File1 data
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git ls-files
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git add file1.txt
+warning: in the working copy of 'file1.txt', LF will be replaced by CRLF the next time Git touches it
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ ls
+file1.txt     // It is available in Working Directory
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git ls-files
+file1.txt    // It is available in Staging Area
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$
+
+Now we use git reset command from Staging Area Level:
+=====================================================
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ ls
+file1.txt
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git ls-files
+file1.txt
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git reset file1.txt
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ ls
+file1.txt   // After reset command file1.txt is available in Working Directory
+
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$ git ls-files
+	   // After reset command file1.txt is not available in Staging Area 
+Naresh@DESKTOP-BUT1MFJ MINGW64 ~/Desktop/gitreset (master)
+$
+
+I think it will be cleared......
+
+
+-> 2. To Undo Commits at Repository Level:
+==========================================
+Example: --mixed option
+
+--> 1. Create three files.
+$ ls
+file1.txt  file2.txt  file3.txt
+
+--> 2. Add and Commit those files.
+$git add file1.txt ; git commit -m "file1.txt is added"
+$git add file2.txt ; git commit -m "file2.txt is added" 
+$git add file3.txt ; git commit -m "file3.txt is added"
+
+--> 3. $ git log --oneline
+953f791 (HEAD -> master) file3.txt file added
+c559a94 file2.txt file added
+c31a4e6 file1.txt file added
+
+--> 4. We have three commits if you want to undo/discard the third commit
+we have to mention the second commit.
+What ever the commit id mentioned above all commites are discarded.
+
+--> $ git reset --mixed c559a94
+--> $ ls  // Available in Working Directory
+file1.txt  file2.txt  file3.txt
+-->$ git ls-files //Discard File3.txt in Staging Area
+file1.txt
+file2.txt
+-->$ git log --oneline // Third Commit also discarded
+c559a94 (HEAD -> master) file2.txt file added
+c31a4e6 file1.txt file added
+
+NOTE: git reset --mixed <commit-id>
+To Discard the Changes in Local Repo and Staging Area
+It Won't the touches the Working Directory
+
+
+Example: --soft option
+========================
+In above --mixed option latest commit was discarded.
+If you want to use commit revert back as
+git add and commit it.
+
+--> $ git ls-files
+file1.txt
+file2.txt
+--> $ ls
+file1.txt  file2.txt  file3.txt
+--> $ git add file3.txt ; git commit -m "file3.txt file added"
+--> $ ls
+file1.txt  file2.txt  file3.txt
+--> $ git ls-files
+file1.txt
+file2.txt
+file3.txt
+--> $ git log --oneline
+2a45ebc (HEAD -> master) file3.txt file added
+c559a94 file2.txt file added
+c31a4e6 file1.txt file added
+==> Now 3 files are in Working Directory, Staging Area
+and Local repository.
+==> By using --soft option with reset command as follows,
+
+-> $ git reset --soft c559a94
+-> $ ls // All Files are available in Working Directory
+file1.txt  file2.txt  file3.txt
+->$ git ls-files // ALL files are available in Staging Area
+file1.txt
+file2.txt
+file3.txt
+-> $ git log --oneline // Only Commit got discared in Local Repo
+c559a94 (HEAD -> master) file2.txt file added
+c31a4e6 file1.txt file added
+
+NOTE: git reset --soft <commit-id>
+To discard the changes only in Local Repo
+It won't touches the Working Directory and 
+Staging Area
+
+Example: --hard option
+========================
+->$ ls
+file1.txt  file2.txt  file3.txt
+->$ git ls-files
+file1.txt
+file2.txt
+file3.txt
+-> Above discarded the third commit.
+-> git commit -m "file3.txt is added"
+-> $ git log --oneline
+d593be8 (HEAD -> master) file3.txt is added
+c559a94 file2.txt file added
+c31a4e6 file1.txt file added
+
+-> $ git reset --hard c559a94
+HEAD is now at c559a94 file2.txt file added
+$ ls
+file1.txt  file2.txt
+$ git ls-files
+file1.txt
+file2.txt
+$ git log --oneline
+c559a94 (HEAD -> master) file2.txt file added
+c31a4e6 file1.txt file added
+
+NOTE: git reset --hard <commit-id>
+To dicarded the checnges in ALL levels.
+No more available file3.txt, 
+Its permanently deleted.
+No way to revert.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
